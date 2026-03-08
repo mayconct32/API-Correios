@@ -4,7 +4,6 @@ from fastapi import APIRouter
 app = APIRouter()
 
 
-
 @app.get("/zip/{zipcode}")
 async def get_by_zip_code(
     zipcode: str

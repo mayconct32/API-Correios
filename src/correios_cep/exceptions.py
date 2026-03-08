@@ -32,3 +32,9 @@ class DatabaseException(AppException):
     """Exceção relacionada a operações de banco de dados"""
     status_code = 500
     default_message = "Erro ao acessar banco de dados"
+
+
+class AddressNotFoundException(AppException):
+    """Exceção lançada quando um endereço não é encontrado"""
+    status_code = 404
+    default_message = "Registro não encontrado"
