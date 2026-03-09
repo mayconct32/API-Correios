@@ -1,9 +1,7 @@
 from typing import List
 from fastapi import APIRouter, Depends
-from src.correios_cep.service.service import CorreiosService
-from src.correios_cep.interfaces import ICorreiosRepository
-from src.correios_cep.repository.correios_repository import CorreiosRepository
-from src.correios_cep.database import MysqlDBConnection
+from src.correios_cep.service.correios_service import CorreiosService
+from src.correios_cep.container import container
 from src.correios_cep.model.address import Address
 
 
@@ -12,7 +10,7 @@ app = APIRouter()
 
 def get_correios_service() -> CorreiosService:
     """
-    Retorna a instância de CorreiosService.
+    Retorna a instância de CorreiosService provida pelo container.
 
     Parâmetros:
         Nenhum.
@@ -20,8 +18,7 @@ def get_correios_service() -> CorreiosService:
     Retorna:
         CorreiosService: serviço utilizado para consultas de endereços.
     """
-    repository: ICorreiosRepository = CorreiosRepository(MysqlDBConnection())
-    return CorreiosService(repository)
+    return container.get_correios_service()
 
 
 @app.get("/zip/{zipcode}", response_model=Address)
