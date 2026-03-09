@@ -2,12 +2,13 @@ import os
 from dotenv import load_dotenv
 from mysql.connector.aio import connect
 from src.correios_cep.exceptions import DatabaseException
+from src.correios_cep.interfaces import IDatabaseConnection
 
 
 load_dotenv(override=True)
 
 
-class MysqlDBConnection:
+class MysqlDBConnection(IDatabaseConnection):
     def __init__(self):
         self._host = os.getenv("HOST")
         self._user = os.getenv("USER")
