@@ -54,3 +54,35 @@ class ICorreiosRepository(ABC):
             ValueError: Quando nenhum filtro for fornecido.
         """
         pass
+
+
+class ISetupRepository(ABC):
+    """
+    Interface para repositório de configuração/setup do banco de dados.
+
+    O Service depende desta abstração, não do SetupRepository concreto.
+    Isso permite trocar a implementação sem modificar o Service.
+    """
+
+    @abstractmethod
+    async def insert_address(self, file_path: str) -> bool:
+        """
+        Insere endereços no banco a partir de um arquivo CSV em disco.
+
+        Args:
+            file_path: Caminho do arquivo CSV.
+
+        Returns:
+            True quando a operação de carga é executada sem erros.
+        """
+        pass
+
+    @abstractmethod
+    async def check_postal_codes_exist(self) -> bool:
+        """
+        Verifica se já existem registros de CEP na tabela de endereços.
+
+        Returns:
+            True se houver ao menos um registro de CEP, senão False.
+        """
+        pass

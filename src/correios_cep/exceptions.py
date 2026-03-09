@@ -38,3 +38,22 @@ class AddressNotFoundException(AppException):
     """Exceção lançada quando um endereço não é encontrado"""
     status_code = 404
     default_message = "Registro não encontrado"
+
+
+class CSVException(AppException):
+    """
+    Exceção base para erros relacionados ao processamento de arquivos
+    CSV na aplicação.
+    """
+
+
+class CSVDownloadException(CSVException):
+    """Exceção lançada quando há erro ao fazer download do CSV"""
+    status_code = 500
+    default_message = "Erro ao processar arquivo"
+
+
+class CSVFileException(CSVException):
+    """Exceção lançada quando há erro com arquivo CSV"""
+    status_code = 500
+    default_message = "Erro ao processar arquivo"
