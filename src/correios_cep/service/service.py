@@ -1,14 +1,13 @@
-from src.correios_cep.repository.correios_repository import CorreiosRepository
-from src.correios_cep.exceptions import ValidationException
+from src.correios_cep.interfaces import ICorreiosRepository
 
 
 class CorreiosService:
-    def __init__(self, correios_repository: CorreiosRepository):
+    def __init__(self, correios_repository: ICorreiosRepository):
         """
         Inicializa o serviço de domínio com o repositório de endereços.
 
         Parâmetros:
-            correios_repository (CorreiosRepository): repositório usado
+            correios_repository (ICorreiosRepository): repositório usado
                 nas consultas de CEP e cidade.
 
         Retorna:
@@ -27,9 +26,6 @@ class CorreiosService:
             Address: endereço retornado pelo repositório para o CEP
             informado.
         """
-        if not zipcode:
-            raise ValidationException("CEP é obrigatório")
-        
         return await self._correios_repository.get_the_address(zipcode=zipcode)
 
     async def get_address_by_city(self, city: str):
@@ -42,7 +38,4 @@ class CorreiosService:
         Retorna:
             list[Address]: lista de endereços encontrados para a cidade.
         """
-        if not city:
-            raise ValidationException("Cidade é obrigatória")
-        
         return await self._correios_repository.get_the_address(city=city)
