@@ -1,7 +1,8 @@
 import logging
 from http import HTTPStatus
 from contextlib import asynccontextmanager
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
+from fastapi.responses import JSONResponse
 from src.correios_cep.controller.correios_controller import app as correios
 from src.correios_cep.container import container
 from src.correios_cep.exceptions import AppException
@@ -60,6 +61,27 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI()
+
+@app.exception_handler(AppException)
+async def exception_handler(request: Request, exc: AppException):
+    """
+    Trata exceções de domínio e as converte em respostas HTTP.
+
+    Parâmetros:
+        request (Request): requisição HTTP que gerou a exceção.
+        exc (AppException): exceção de domínio capturada pela
+            aplicação.
+
+    Retorna:
+        JSONResponse: resposta HTTP com código de status e mensagem de
+            erro.
+    """
+    logger.warning(f"Exceção capturada: [{exc.status_code}] {exc.message}")
+    
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={"detail": exc.message}
+    )
 
 
 app.include_router(correios)
