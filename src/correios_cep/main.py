@@ -1,7 +1,7 @@
 import logging
 from http import HTTPStatus
 from contextlib import asynccontextmanager
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, HTTPException
 from fastapi.responses import JSONResponse
 from src.correios_cep.controller.correios_controller import app as correios
 from src.correios_cep.container import container
@@ -60,7 +60,12 @@ async def lifespan(app: FastAPI):
     yield
 
 
-app = FastAPI()
+app = FastAPI(
+    lifespan=lifespan, 
+    title="Correios CEP API", 
+    version="1.0.0"
+)
+
 
 @app.exception_handler(AppException)
 async def exception_handler(request: Request, exc: AppException):
@@ -82,6 +87,34 @@ async def exception_handler(request: Request, exc: AppException):
         status_code=exc.status_code,
         content={"detail": exc.message}
     )
+
+
+@app.get("/health_check", status_code=HTTPStatus.OK)
+async def health_check():
+    """
+    Verifica a saúde da aplicação, incluindo conexão com o banco de dados.
+
+    Parâmetros:
+        Nenhum.
+
+    Retorna:
+        dict: informações sobre o status geral da aplicação e do banco.
+    """
+    try:
+        db = container.get_db_connection()
+        await db.execute("SELECT 1")
+        
+        return {
+            "message": "OK",
+            "status": "healthy",
+            "database": "connected"
+        }
+    except Exception as e:
+        logger.error(f"Health check falhou: {str(e)}")
+        raise HTTPException(
+            status_code=503,
+            detail="Database unavailable"
+        )
 
 
 app.include_router(correios)
