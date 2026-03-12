@@ -46,3 +46,39 @@ async def test_get_by_zip_code_404(client):
     }
 
 
+
+@pytest.mark.asyncio
+async def test_get_by_city_200(client):
+    response = await client.get("/city/Carangola")
+    assert response.status_code == HTTPStatus.OK
+    assert isinstance(response.json(),list)
+
+
+@pytest.mark.asyncio
+async def test_get_by_city_404(client):
+    city = "invalid_city"
+    response = await client.get(f"city/{city}")
+    assert response.status_code == HTTPStatus.NOT_FOUND
+    assert response.json() == {
+        "detail": f"Nenhum endereço em {city}"
+    }
+
+
+@pytest.mark.asyncio
+async def test_get_by_city_empty_validation(client):
+    response = await client.get("/city/")
+    assert response.status_code == HTTPStatus.BAD_REQUEST
+    assert response.json() == {
+        "detail": "Cidade não pode ser vazia"
+    }
+
+
+@pytest.mark.asyncio
+async def test_healt_check_200(client):
+    response = await client.get("/health_check")
+    assert response.status_code == HTTPStatus.OK
+    assert response.json() == {
+        "message": "OK",
+        "status": "healthy",
+        "database": "connected"
+    }
