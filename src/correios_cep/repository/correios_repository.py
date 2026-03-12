@@ -26,20 +26,23 @@ class CorreiosRepository(ICorreiosRepository):
                 cidade.
         """
         if zipcode:
-            sql = (
-                "SELECT zipcode, state, city, Neighborhood, street "
-                "FROM correios_ceps WHERE zipcode = %s LIMIT 1"
-            )
+            sql = """
+                SELECT zipcode, state, city, neighborhood, street
+                FROM addresses
+                WHERE zipcode = %s
+                LIMIT 1
+            """
             rows = await self._db_connection.execute(sql=sql, data=(zipcode,))
             if not rows:
                 raise AddressNotFoundException(f"CEP {zipcode} não encontrado")
             return Address(**rows[0])
 
         if city:
-            sql = (
-                "SELECT zipcode, state, city, Neighborhood, street "
-                "FROM correios_ceps WHERE city = %s"
-            )
+            sql = """
+                SELECT zipcode, state, city, neighborhood, street
+                FROM addresses
+                WHERE city = %s
+            """
             rows = await self._db_connection.execute(sql=sql, data=(city,))
             if not rows:
                 raise AddressNotFoundException(f"Nenhum endereço em {city}")
